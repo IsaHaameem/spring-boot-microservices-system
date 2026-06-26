@@ -1,6 +1,6 @@
 # Microservices Order Platform
 
-A Spring Boot 4 / Java 21 microservices system implementing API gateway routing, stateless JWT authentication, service-to-service communication, atomic inventory control, and Docker-based deployment with genuine network isolation — not just service separation on paper.
+A Spring Boot 4 / Java 25 microservices system implementing API gateway routing, stateless JWT authentication, service-to-service communication, atomic inventory control, and Docker-based deployment with genuine network isolation — not just service separation on paper.
 
 This is a learning/portfolio project. It is built with production patterns where they matter (atomic stock updates, snapshot pricing, network-enforced trust boundaries) and deliberately simplified where the full production answer would be a separate project in itself (no Saga orchestration, no message broker, no RBAC yet). Every simplification is documented below, not hidden.
 
@@ -8,7 +8,7 @@ This is a learning/portfolio project. It is built with production patterns where
 
 ## Badges
 
-![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk&logoColor=white)
+![Java](https://img.shields.io/badge/Java-25-orange?style=flat-square&logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.7-brightgreen?style=flat-square&logo=springboot&logoColor=white)
 ![Spring Cloud Gateway](https://img.shields.io/badge/Spring%20Cloud%20Gateway-5.0.2-6DB33F?style=flat-square&logo=spring&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)
