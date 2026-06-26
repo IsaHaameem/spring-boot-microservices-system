@@ -629,6 +629,6 @@ This project is licensed under the MIT License — see the `LICENSE` file for de
 
 **Muhammad Isa Haameem**
 
-- GitHub: [github.com/yourusername](https://github.com/IsaHaameem)
-- LinkedIn: [linkedin.com/in/yourprofile](www.linkedin.com/in/muhammad-isa-haameem-ba420834a)
+- GitHub: [https://github.com/IsaHaameem](https://github.com/IsaHaameem)
+- LinkedIn: [https://www.linkedin.com/in/muhammad-isa-haameem-ba420834a/](https://www.linkedin.com/in/muhammad-isa-haameem-ba420834a/)
 - Email: isahameem@gmail.com
