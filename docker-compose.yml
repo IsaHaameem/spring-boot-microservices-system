@@ -1,0 +1,138 @@
+networks:
+  microservices-net:
+    driver: bridge
+
+volumes:
+  postgres_user_data:
+  postgres_product_data:
+  postgres_order_data:
+
+services:
+
+  postgres-user:
+    image: postgres:17-alpine
+    container_name: postgres-user
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${USER_DB_NAME}
+      POSTGRES_USER: ${USER_DB_USER}
+      POSTGRES_PASSWORD: ${USER_DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_user_data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${USER_DB_USER} -d ${USER_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgres-product:
+    image: postgres:17-alpine
+    container_name: postgres-product
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PRODUCT_DB_NAME}
+      POSTGRES_USER: ${PRODUCT_DB_USER}
+      POSTGRES_PASSWORD: ${PRODUCT_DB_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_product_data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PRODUCT_DB_USER} -d ${PRODUCT_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgres-order:
+    image: postgres:17-alpine
+    container_name: postgres-order
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${ORDER_DB_NAME}
+      POSTGRES_USER: ${ORDER_DB_USER}
+      POSTGRES_PASSWORD: ${ORDER_DB_PASSWORD}
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_order_data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ORDER_DB_USER} -d ${ORDER_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  user-service:
+    build:
+      context: ./user-service
+    container_name: user-service
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-user:5432/${USER_DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${USER_DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${USER_DB_PASSWORD}
+      APP_JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres-user:
+        condition: service_healthy
+    networks:
+      - microservices-net
+
+  product-service:
+    build:
+      context: ./product-service
+    container_name: product-service
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-product:5432/${PRODUCT_DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${PRODUCT_DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${PRODUCT_DB_PASSWORD}
+    depends_on:
+      postgres-product:
+        condition: service_healthy
+    networks:
+      - microservices-net
+
+  order-service:
+    build:
+      context: ./order-service
+    container_name: order-service
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5432/${ORDER_DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${ORDER_DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${ORDER_DB_PASSWORD}
+      APP_CLIENTS_USER-SERVICE_BASE-URL: http://user-service:8081
+      APP_CLIENTS_PRODUCT-SERVICE_BASE-URL: http://product-service:8082
+    depends_on:
+      postgres-order:
+        condition: service_healthy
+      user-service:
+        condition: service_started
+      product-service:
+        condition: service_started
+    networks:
+      - microservices-net
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      APP_JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+    networks:
+      - microservices-net

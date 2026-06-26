@@ -1,0 +1,27 @@
+server:
+  port: 8081
+app:
+  jwt:
+    secret: BdsvjCEDVUX6DzLOt4nmqoRIFtJb+6RKPmcrkoBFcaI=
+    expiration-ms: 900000
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:postgresql://localhost:5433/userdb
+    username: user_service
+    password: changeme123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

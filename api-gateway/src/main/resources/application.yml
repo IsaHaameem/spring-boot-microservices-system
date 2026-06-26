@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: user-service-auth
+              uri: http://user-service:8081
+              predicates:
+                - Path=/api/auth/**
+            - id: user-service-me
+              uri: http://user-service:8081
+              predicates:
+                - Path=/api/users/me
+            - id: product-service
+              uri: http://product-service:8082
+              predicates:
+                - Path=/api/products/**
+            - id: order-service
+              uri: http://order-service:8083
+              predicates:
+                - Path=/api/orders/**
+
+app:
+  jwt:
+    secret: BdsvjCEDVUX6DzLOt4nmqoRIFtJb+6RKPmcrkoBFcaI=
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
